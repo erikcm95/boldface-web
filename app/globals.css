@@ -19,6 +19,7 @@
 }
 
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 
 html, body { margin: 0; background: var(--bg); color: var(--text); }
 
@@ -161,3 +162,18 @@ textarea.input { padding: 12px 14px; resize: vertical; min-height: 140px; }
 .page-head .container { position: relative; padding-top: 130px; padding-bottom: 36px; display: flex; flex-direction: column; gap: 8px; }
 .page-title { font-size: 56px; line-height: 1.02; }
 @media (max-width: 600px) { .page-title { font-size: 42px; } .h2 { font-size: 32px; } }
+
+/* sign in */
+.nav-signin {
+  display: flex; align-items: center; gap: 8px; min-height: 48px; margin-left: 8px; padding: 0 18px; border-radius: 9px;
+  border: 1px solid rgba(255,255,255,0.35); background: transparent; color: var(--text);
+  font: inherit; font-weight: 600; font-size: 16.5px; cursor: pointer;
+}
+.nav-signin:hover { border-color: rgba(255,255,255,0.7); }
+@media (max-width: 760px) { .nav-signin { margin-left: 0; justify-content: center; } }
+.ck-button { min-height: 48px; display: flex; justify-content: center; }
+.ck-button > * { max-width: 100%; }
+.signin-notes { display: flex; flex-direction: column; gap: 8px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 14px; color: var(--text-muted); }
+.signin-notes > div { display: flex; gap: 10px; }
+.signin-notes > div > span:first-child { color: var(--accent); }
+.sync-status { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 12px; background: var(--bg); border: 1px solid #23262d; }

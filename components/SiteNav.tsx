@@ -2,13 +2,17 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useCloudKit } from "./CloudKitProvider";
+import SignInDialog, { type SignInDialogHandle } from "./SignInDialog";
 import { navLinks } from "@/lib/site";
 
 export default function SiteNav() {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const signIn = useRef<SignInDialogHandle>(null);
+  const { status } = useCloudKit();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -43,8 +47,14 @@ export default function SiteNav() {
               {l.label}
             </Link>
           ))}
+          {status !== "unavailable" && (
+            <button type="button" className="nav-signin" onClick={() => signIn.current?.open()}>
+              {status === "signedIn" ? "Synced ✓" : "Sign in"}
+            </button>
+          )}
         </div>
       </nav>
+      <SignInDialog ref={signIn} />
     </div>
   );
 }

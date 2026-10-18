@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Archivo, IBM_Plex_Mono, IBM_Plex_Sans } from "next/font/google";
 import SiteNav from "@/components/SiteNav";
 import SiteFooter from "@/components/SiteFooter";
+import CloudKitProvider from "@/components/CloudKitProvider";
 import { site } from "@/lib/site";
 import "./globals.css";
 
@@ -31,9 +32,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={`${archivo.variable} ${plexSans.variable} ${plexMono.variable}`}>
       <body>
         <a href="#main" className="skip-link">Skip to content</a>
-        <SiteNav />
-        <main id="main">{children}</main>
-        <SiteFooter />
+        <CloudKitProvider>
+          <SiteNav />
+          <main id="main">{children}</main>
+          <SiteFooter />
+        </CloudKitProvider>
       </body>
     </html>
   );
