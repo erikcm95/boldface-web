@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
+import { cloudkit } from "@/lib/site";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 declare global {
@@ -8,9 +9,9 @@ declare global {
 }
 
 const SCRIPT_SRC = "https://cdn.apple-cloudkit.com/ck/2/cloudkit.js";
-const CONTAINER_ID = process.env.NEXT_PUBLIC_CLOUDKIT_CONTAINER || "iCloud.com.BoldFace.BoldFaceApp";
-const API_TOKEN = process.env.NEXT_PUBLIC_CLOUDKIT_API_TOKEN || "";
-const ENVIRONMENT = process.env.NEXT_PUBLIC_CLOUDKIT_ENV || "production";
+const CONTAINER_ID = process.env.NEXT_PUBLIC_CLOUDKIT_CONTAINER || cloudkit.containerId;
+const API_TOKEN = process.env.NEXT_PUBLIC_CLOUDKIT_API_TOKEN || cloudkit.apiToken;
+const ENVIRONMENT = process.env.NEXT_PUBLIC_CLOUDKIT_ENV || cloudkit.environment;
 
 export const SIGN_IN_BUTTON_ID = "ck-sign-in-button";
 export const SIGN_OUT_BUTTON_ID = "ck-sign-out-button";

@@ -28,7 +28,7 @@ npm run build    # production build check
 | `RESEND_API_KEY` | API key from resend.com |
 | `SUPPORT_FROM` | `BoldFace Support <support@boldfaceaviation.com>` (domain must be verified in Resend) |
 | `SUPPORT_TO` | `boldfaceaviation@gmail.com` |
-| `NEXT_PUBLIC_CLOUDKIT_API_TOKEN` | API token from CloudKit Console (Tokens & Keys). Without it the Sign in button is hidden. |
+| `NEXT_PUBLIC_CLOUDKIT_API_TOKEN` | Optional override. The public CloudKit API token is already in `lib/site.ts`. |
 | `NEXT_PUBLIC_CLOUDKIT_ENV` | `production` |
 
 Without these, the Support form tells visitors to email boldfaceaviation@gmail.com directly.
