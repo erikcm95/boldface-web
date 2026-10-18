@@ -1,0 +1,13 @@
+.page { position: relative; isolation: isolate; min-height: 100vh; }
+.bg { position: fixed; inset: 0; z-index: -1; overflow: hidden; }
+.bgShade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(10,11,13,0.45) 0%, rgba(10,11,13,0.72) 45%, rgba(10,11,13,0.86) 100%); }
+.head { padding-top: 130px; padding-bottom: 36px; min-height: 340px; display: flex; flex-direction: column; justify-content: flex-end; gap: 8px; }
+.body { padding-top: 8px; padding-bottom: 96px; }
+.empty {
+  padding: 64px 28px; text-align: center; border: 1px dashed rgba(255,255,255,0.22); border-radius: 22px;
+  background: rgba(15,16,19,0.62); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  display: flex; flex-direction: column; gap: 14px; align-items: center;
+}
+.emptyTitle { margin: 0; font-family: var(--font-display); font-weight: 800; font-size: 30px; line-height: 1.15; }
+.emptyText { margin: 0; max-width: 560px; color: #c9cdd4; }
+.actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 6px; }
