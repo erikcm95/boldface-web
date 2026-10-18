@@ -27,10 +27,15 @@ type Ctx = {
   refresh: () => void;
   /** The private CloudKit database for the signed-in user (null when signed out). */
   database: any | null;
+  /** Opens the sign-in window from anywhere on the site. */
+  requestSignIn: () => void;
+  /** Used by the nav to register the function that opens its sign-in window. */
+  registerSignIn: (fn: () => void) => void;
 };
 
 const CloudKitContext = createContext<Ctx>({
   status: "unavailable", userRecordName: null, summary: null, summaryError: null, refresh: () => {}, database: null,
+  requestSignIn: () => {}, registerSignIn: () => {},
 });
 
 export const useCloudKit = () => useContext(CloudKitContext);
@@ -66,6 +71,9 @@ export default function CloudKitProvider({ children }: { children: React.ReactNo
   const [summaryError, setSummaryError] = useState<string | null>(null);
   const container = useRef<any>(null);
   const [database, setDatabase] = useState<any>(null);
+  const opener = useRef<() => void>(() => {});
+  const requestSignIn = useCallback(() => opener.current(), []);
+  const registerSignIn = useCallback((fn: () => void) => { opener.current = fn; }, []);
 
   const loadSummary = useCallback(async () => {
     const db = container.current?.privateCloudDatabase;
@@ -121,7 +129,7 @@ export default function CloudKitProvider({ children }: { children: React.ReactNo
   }, [loadSummary]);
 
   return (
-    <CloudKitContext.Provider value={{ status, userRecordName, summary, summaryError, refresh: loadSummary, database }}>
+    <CloudKitContext.Provider value={{ status, userRecordName, summary, summaryError, refresh: loadSummary, database, requestSignIn, registerSignIn }}>
       {children}
     </CloudKitContext.Provider>
   );

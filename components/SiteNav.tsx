@@ -12,7 +12,9 @@ export default function SiteNav() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const signIn = useRef<SignInDialogHandle>(null);
-  const { status } = useCloudKit();
+  const { status, registerSignIn } = useCloudKit();
+
+  useEffect(() => registerSignIn(() => signIn.current?.open()), [registerSignIn]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);

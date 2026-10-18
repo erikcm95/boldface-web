@@ -177,3 +177,11 @@ textarea.input { padding: 12px 14px; resize: vertical; min-height: 140px; }
 .signin-notes > div { display: flex; gap: 10px; }
 .signin-notes > div > span:first-child { color: var(--accent); }
 .sync-status { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 12px; background: var(--bg); border: 1px solid #23262d; }
+
+/* sign-in gate */
+.gate {
+  padding: 56px 28px; text-align: center; border-radius: 22px; background: var(--surface); border: 1px solid var(--line);
+  display: flex; flex-direction: column; align-items: center; gap: 14px;
+}
+.gate-title { margin: 0; font-family: var(--font-display); font-weight: 800; font-size: 28px; line-height: 1.15; }
+.gate-text { margin: 0; max-width: 560px; color: var(--text-soft); }

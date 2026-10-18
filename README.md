@@ -9,7 +9,8 @@ Website for BoldFace (https://boldfaceaviation.com). Next.js 15 (App Router), ho
 | `/` | Home: hero, app screenshots, Deck Library teaser, 3 steps, App Store links |
 | `/privacy` | Privacy Policy, rendered from `content/privacy-policy.md` |
 | `/library` | Deck Library: "first decks are on their way" placeholder |
-| `/editor`, `/builder` | Coming soon (Phase 2: Sign in with Apple + CloudKit sync) |
+| `/builder` | Card Builder: sign-in required; create, edit, delete custom cards (with images and deck membership) in the user's private iCloud. Logic in `lib/cards.ts` |
+| `/editor` | Coming soon |
 | `/api/support` | Support form → email via Resend |
 | Sign in (nav) | Apple ID sign-in via CloudKit JS; shows the user's custom card and deck counts from their private iCloud |
 
