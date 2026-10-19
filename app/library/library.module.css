@@ -11,3 +11,25 @@
 .emptyTitle { margin: 0; font-family: var(--font-display); font-weight: 800; font-size: 30px; line-height: 1.15; }
 .emptyText { margin: 0; max-width: 560px; color: #c9cdd4; }
 .actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 6px; }
+.headActions { margin-top: 12px; display: flex; gap: 10px; flex-wrap: wrap; }
+.count { margin: 0 0 14px; font-family: var(--font-mono); font-size: 13px; color: #c9cdd4; }
+.grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 18px; }
+@media (max-width: 400px) { .grid { grid-template-columns: 1fr; } }
+.card {
+  display: flex; flex-direction: column; overflow: hidden; border-radius: 20px; border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(15,16,19,0.72); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+}
+.cardTop { min-height: 120px; padding: 18px 20px; display: flex; flex-direction: column; justify-content: flex-end; gap: 4px; color: #fff; }
+.cardName { font-family: var(--font-display); font-weight: 800; font-size: 24px; line-height: 1.15; text-shadow: 0 1px 3px rgba(0,0,0,0.45); overflow-wrap: anywhere; }
+.cardCount { font-family: var(--font-mono); font-size: 13px; opacity: 0.92; }
+.cardBody { flex: 1; display: flex; flex-direction: column; gap: 12px; padding: 16px 20px 18px; }
+.cardDesc { margin: 0; color: var(--text-soft); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font-size: 12px; padding: 1px 9px; border-radius: 999px; border: 1px solid var(--line-2); color: #c9cdd4; }
+.rating { font-size: 12px; padding: 1px 9px; border-radius: 999px; background: rgba(242,181,68,0.14); color: #f2c766; font-weight: 600; }
+.sample { margin: 0; font-size: 14px; color: var(--text-muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.sample span { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); margin-right: 4px; }
+.cardFoot { margin-top: auto; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 4px; }
+.cardFoot :global(.btn) { gap: 8px; }
+.by { font-size: 14px; color: var(--text-muted); min-width: 0; overflow-wrap: anywhere; }
+.howto { margin: 22px 0 0; font-size: 14px; color: #c9cdd4; }

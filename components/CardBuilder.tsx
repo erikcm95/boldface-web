@@ -27,11 +27,18 @@ type Editor = {
 };
 
 function errText(e: any) {
-  return e?.reason || e?.message || "Something went wrong talking to iCloud.";
+  const code = e?.ckErrorCode || e?.serverErrorCode;
+  const msg = e?.reason || e?.message || "Something went wrong talking to iCloud.";
+  return code && !String(msg).includes(code) ? `${msg} (${code})` : msg;
+}
+
+/** Fails a stalled iCloud call instead of leaving Save spinning forever. */
+function withTimeout<T>(p: Promise<T>, what: string, ms = 30000): Promise<T> {
+  return Promise.race([p, new Promise<T>((_, reject) => setTimeout(() => reject(new Error(`iCloud didn’t respond while ${what}. Check your connection and try again.`)), ms))]);
 }
 
 export default function CardBuilder() {
-  const { database: db } = useCloudKit();
+  const { database: db, refresh: refreshSummary } = useCloudKit();
   const [cards, setCards] = useState<Card[] | null>(null);
   const [decks, setDecks] = useState<Deck[]>([]);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -55,6 +62,19 @@ export default function CardBuilder() {
   }, [db]);
 
   useEffect(() => { load(); }, [load]);
+
+  // Keep the list in step with the app: re-sync from iCloud whenever the tab comes back into view.
+  useEffect(() => {
+    const onShow = () => { if (document.visibilityState === "visible" && !editorRef.current?.open) load(); };
+    document.addEventListener("visibilitychange", onShow);
+    window.addEventListener("focus", onShow);
+    return () => { document.removeEventListener("visibilitychange", onShow); window.removeEventListener("focus", onShow); };
+  }, [load]);
+
+  // Errors appear right under the Save bar; make sure they're on screen.
+  useEffect(() => {
+    if (saveError || tried) editorRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+  }, [saveError, tried]);
 
   useEffect(() => { if (editor) { if (!editorRef.current?.open) editorRef.current?.showModal(); } else editorRef.current?.close(); }, [editor]);
   useEffect(() => { if (confirm) { if (!confirmRef.current?.open) confirmRef.current?.showModal(); } else confirmRef.current?.close(); }, [confirm]);
@@ -113,12 +133,13 @@ export default function CardBuilder() {
   const valid = !!editor && editor.question.trim() !== "" && editor.answer.trim() !== "";
 
   async function save() {
-    if (!db || !editor) return;
+    if (!editor) return;
     if (!valid) { setTried(true); return; }
+    if (!db) { setSaveError("You’re not signed in to iCloud. Sign in again and retry."); return; }
     setSaving(true); setSaveError(null);
     try {
       const resolve = async (slot: ImgSlot) => {
-        if (slot.file) return uploadImage(db, await toJpeg(slot.file));
+        if (slot.file) return withTimeout(uploadImage(db, await toJpeg(slot.file)), "uploading an image", 90000);
         return slot.removed ? null : slot.name;
       };
       const [questionImageName, imageName] = await Promise.all([resolve(editor.qImg), resolve(editor.aImg)]);
@@ -128,8 +149,11 @@ export default function CardBuilder() {
         ratings: editor.ratings, categories: editor.categories,
         questionImageName, imageName,
       };
-      const saved = await saveCard(db, draft);
-      await setDeckMembership(db, decks, saved.id, editor.decks);
+      const saved = await withTimeout(saveCard(db, draft), "saving the card");
+      // Read it back so we only report success once iCloud really has it.
+      const check: any = await withTimeout<any>(db.fetchRecords([saved.id]), "confirming the save");
+      if (check?.hasErrors || !check?.records?.length) throw check?.errors?.[0] || new Error("iCloud didn’t confirm the save.");
+      await withTimeout(setDeckMembership(db, decks, saved.id, editor.decks), "updating decks");
       // Clean up images this card no longer uses.
       if (editor.card) {
         await deleteImages(db, [
@@ -137,11 +161,14 @@ export default function CardBuilder() {
           editor.card.imageName !== imageName ? editor.card.imageName : null,
         ]);
       }
+      // Show it right away, then sync everything from iCloud.
+      setCards((list) => [saved, ...(list || []).filter((c) => c.id !== saved.id)]);
       setEditor(null);
-      setNotice(editor.card ? "Card updated. It will sync to your devices." : "Card added. It will sync to your devices.");
+      setNotice(editor.card ? "Card updated in iCloud. Your devices will sync it automatically." : "Card saved to iCloud. Your devices will sync it automatically.");
       await load();
+      refreshSummary();
     } catch (e) {
-      console.error(e); setSaveError(errText(e));
+      console.error("Card save failed", e); setSaveError(errText(e));
     } finally { setSaving(false); }
   }
 
@@ -231,14 +258,19 @@ export default function CardBuilder() {
       {/* Editor */}
       <dialog ref={editorRef} className={`dialog ${s.editor}`} aria-labelledby="editor-title" onCancel={(e) => { if (saving) e.preventDefault(); else setEditor(null); }}>
         {editor && (
-          <form onSubmit={(e) => { e.preventDefault(); save(); }}>
+          <form noValidate onSubmit={(e) => { e.preventDefault(); save(); }}>
             <div className={s.editorHead}>
               <button type="button" className={s.textBtn} onClick={() => setEditor(null)} disabled={saving}>Cancel</button>
               <h2 id="editor-title" className={s.editorTitle}>{editor.card ? "Edit Card" : "New Card"}</h2>
-              <button type="submit" className={`btn ${valid ? "btn-accent" : s.saveOff}`} disabled={saving} aria-disabled={!valid}>
+              <button type="submit" className={`btn ${valid ? "btn-accent" : s.saveOff}`} disabled={saving} onClick={(e) => { e.preventDefault(); save(); }}>
                 {saving ? "Saving…" : "Save"}
               </button>
             </div>
+            {((tried && !valid) || saveError) && (
+              <p className={s.saveAlert} role="alert">
+                {saveError ? `Couldn’t save: ${saveError}` : "Add a question and an answer to save this card."}
+              </p>
+            )}
             <div className={s.editorBody}>
               <div className="field">
                 <label htmlFor="e-q" className={s.label}>Question</label>
@@ -280,8 +312,6 @@ export default function CardBuilder() {
                 </div>
                 <span className={s.help}>All user-made cards are automatically added to the “User Made” category. You can optionally add additional categories.</span>
               </fieldset>
-              {tried && !valid && <p className="error" role="alert">Add a question and an answer to save this card.</p>}
-              {saveError && <p className="error" role="alert">Couldn’t save: {saveError}</p>}
               {editor.card && (
                 <button type="button" className={s.deleteCard} onClick={() => setConfirm(editor.card)} disabled={saving}>Delete Card</button>
               )}

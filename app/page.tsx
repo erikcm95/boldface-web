@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import AppStoreButton from "@/components/AppStoreButton";
+import SubmitDeckButton from "@/components/SubmitDeck";
 import s from "./home.module.css";
 
 import heroPhoto from "@/public/images/hero-photo.jpg";
@@ -97,10 +98,10 @@ export default function Home() {
           <div className={s.glass}>
             <div className="eyebrow">Deck Library</div>
             <div className={s.glassTitle}>View and download user made decks.</div>
-            <p className="soft" style={{ margin: 0 }}>Built a deck your students or study group would use? Submit it from the Deck Editor and it’ll be reviewed for the Library.</p>
+            <p className="soft" style={{ margin: 0 }}>Built a deck your students or study group would use? Submit it here and it’ll be reviewed for the Library.</p>
             <div className={s.ctaRow}>
               <Link href="/library" className="btn btn-light">Visit the Deck Library</Link>
-              <Link href="/editor" className="btn btn-ghost">Submit a deck</Link>
+              <SubmitDeckButton className="btn btn-ghost" />
             </div>
           </div>
         </div>

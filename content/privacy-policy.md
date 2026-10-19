@@ -21,7 +21,7 @@ The app does not collect analytics, tracking data, or personal information beyon
 The website only receives information you choose to send it, plus the basic request data every website receives:
 - **Support Messages:** If you use the Support form, we receive the email address you enter and your message. They are delivered to us through an email delivery service so we can reply to you.
 - **Sign in with Apple:** When you sign in on the website, Apple shares your name and an email address with BoldFace. If you choose Hide My Email, we receive a private Apple relay address instead of your real email.
-- **Deck Library Submissions:** If you submit a deck to the Deck Library, we store the deck (its cards, references, and images) along with the account that submitted it.
+- **Deck Library Submissions:** If you submit a deck to the Deck Library, we store the deck file (its cards, references, and images) and the optional display name you enter, which is shown with the deck if it is approved. The email address and note you enter are sent to us by email for review and are not published or stored on the website.
 - **Server Logs:** The website is hosted by Vercel. Like any web host, Vercel automatically records basic request data, such as your IP address, browser type, and the pages requested, to keep the website secure and running.
 
 We do not use analytics, advertising, or tracking cookies on the website.
@@ -66,7 +66,7 @@ Important Details:
 - You control your iCloud storage through your Apple ID settings
 
 ### Website Data
-- Support messages are kept in the BoldFace email inbox for as long as needed to help you
+- Support messages and deck submission emails are kept in the BoldFace email inbox for as long as needed
 - Deck Library submissions and approved decks are stored with Vercel's storage service
 - Server logs are kept by Vercel according to its own retention practices
 
@@ -88,7 +88,7 @@ If you turn on study reminders, the app asks for permission to send you notifica
 We do not sell your data or share it with advertisers. We share data only with the service providers that run BoldFace, and only as needed for them to do so:
 - **Apple:** iCloud (CloudKit) sync and Sign in with Apple
 - **Vercel:** Website hosting and Deck Library storage
-- **Our email delivery provider:** Delivering Support form messages to us
+- **Our email delivery provider:** Delivering Support form messages and Deck Library submissions to us
 
 ### Sharing Decks from the App
 You have the option to export and share decks you create:
@@ -125,7 +125,7 @@ No third-party analytics, advertising, or tracking services are used in the app.
 ### The Website
 - **Vercel:** Hosting and Deck Library storage
 - **Apple:** Sign in with Apple and CloudKit access to your private iCloud data
-- **Email delivery provider:** Delivers Support form messages to us
+- **Email delivery provider:** Delivers Support form messages and Deck Library submissions to us
 
 No third-party analytics, advertising, or tracking services are used on the website.
 
