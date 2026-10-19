@@ -25,9 +25,19 @@ export type Card = {
   changeTag?: string;
 };
 
-export type Deck = { id: string; name: string; cardIDs: string[]; changeTag?: string };
+export type Deck = {
+  id: string;
+  name: string;
+  description: string;
+  cardIDs: string[];
+  iconName: string;
+  gradientColors: string[];
+  createdDate: number;
+  lastModified: number;
+  changeTag?: string;
+};
 
-const uuid = () => crypto.randomUUID().toUpperCase();
+export const uuid = () => crypto.randomUUID().toUpperCase();
 
 async function queryAll(db: any, recordType: string): Promise<any[]> {
   const out: any[] = [];
@@ -67,12 +77,26 @@ export async function loadDecks(db: any): Promise<Deck[]> {
   const recs = await queryAll(db, "CustomDeck");
   return recs
     .filter((r) => !r.fields?.isDeleted?.value)
-    .map((r) => ({ id: r.fields?.id?.value ?? r.recordName, name: r.fields?.name?.value ?? "Untitled deck", cardIDs: r.fields?.cardIDs?.value ?? [], changeTag: r.recordChangeTag }))
+    .map((r) => {
+      const f = r.fields || {};
+      const lastModified = f.lastModified?.value ?? 0;
+      return {
+        id: f.id?.value ?? r.recordName,
+        name: f.name?.value ?? "Untitled Deck",
+        description: f.deckDescription?.value ?? "",
+        cardIDs: f.cardIDs?.value ?? [],
+        iconName: f.iconName?.value ?? "",
+        gradientColors: f.gradientColors?.value ?? ["#007AFF", "#0051D5"],
+        createdDate: f.createdDate?.value ?? lastModified,
+        lastModified,
+        changeTag: r.recordChangeTag,
+      };
+    })
     .sort((a, b) => a.name.localeCompare(b.name));
 }
 
 /** Saves records, retrying once per record with a fresh change tag if CloudKit reports a conflict. */
-async function saveWithRetry(db: any, records: any[]): Promise<any[]> {
+export async function saveWithRetry(db: any, records: any[]): Promise<any[]> {
   const res = await db.saveRecords(records);
   if (!res.hasErrors) return res.records;
   const conflicts = res.errors.filter((e: any) => e.ckErrorCode === "CONFLICT" && e.recordName);

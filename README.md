@@ -10,7 +10,7 @@ Website for BoldFace (https://boldfaceaviation.com). Next.js 15 (App Router), ho
 | `/privacy` | Privacy Policy, rendered from `content/privacy-policy.md` |
 | `/library` | Deck Library: "first decks are on their way" placeholder |
 | `/builder` | Card Builder: sign-in required; create, edit, delete custom cards (with images and deck membership) in the user's private iCloud. Logic in `lib/cards.ts` |
-| `/editor` | Coming soon |
+| `/editor` | Deck Editor: sign-in required; create, edit (name, description, color), delete decks; add/remove cards (built-in + custom); download as .boldface. Logic in `lib/decks.ts` |
 | `/api/support` | Support form → email via Resend |
 | Sign in (nav) | Apple ID sign-in via CloudKit JS; shows the user's custom card and deck counts from their private iCloud |
 
@@ -45,3 +45,12 @@ Without these, the Support form tells visitors to email boldfaceaviation@gmail.c
 ## Sync rules for Phase 2 (CloudKit JS)
 
 Match the app's last-write-wins model: always set `modifiedDate` (cards) / `lastModified` (decks); write only if newer; save with the record change tag and re-resolve on conflict; delete by setting `isDeleted`, never hard-delete.
+
+## Built-in cards
+
+`public/data/flashcards.json` is a trimmed copy of the app's `BoldFace/flashcards.json`, used by the Deck Editor's Add Cards list.
+When the app's card set changes, refresh it:
+
+```bash
+python3 -c "import json;d=json.load(open('../BoldFace/BoldFace/flashcards.json'));json.dump({'cards':[{k:c[k] for k in ('id','question','answer','categories','ratings','ref') if k in c} for c in d['cards']]},open('public/data/flashcards.json','w'),separators=(',',':'))"
+```
