@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { checkToken, getSubmission, reviewToken } from "@/lib/server/submissions";
+import { readDeckCards, type ReviewCard } from "@/lib/server/deckPackage";
+import { builtInCards, deckBytes } from "@/lib/server/reviewDeck";
 import { reviewAction } from "../actions";
 import s from "../review.module.css";
 
@@ -46,6 +48,14 @@ export default async function ReviewPage({ params, searchParams }: { params: Pro
 
   const { sub, status } = found;
   const d = sub.summary;
+  let cards: ReviewCard[] = [];
+  let cardsError = "";
+  try { cards = readDeckCards(await deckBytes(sub.file), await builtInCards()).cards; }
+  catch (e) { console.error("Review: could not read deck", e); cardsError = "The deck file couldn’t be read. Download it and open it in BoldFace to review it."; }
+  const img = (name: string) => `/api/review/${id}/image?name=${encodeURIComponent(name)}&t=${encodeURIComponent(t)}`;
+  const custom = cards.filter((c) => !c.builtIn && !c.missing).length;
+  const builtIn = cards.filter((c) => c.builtIn).length;
+  const missing = cards.filter((c) => c.missing).length;
   return (
     <div className={`container ${s.wrap}`}>
       {banner && <p className={`${s.banner} ${banner[1] ? s.ok : s.warn}`}>{banner[0]}</p>}
@@ -66,11 +76,8 @@ export default async function ReviewPage({ params, searchParams }: { params: Pro
             <dt>Submitted</dt><dd>{when(sub.submittedAt)}</dd>
           </dl>
           {sub.notes && (<div><p className={s.label}>Note from the submitter</p><p className={s.notes}>{sub.notes}</p></div>)}
-          {d.sample.length > 0 && (
-            <div>
-              <p className={s.label}>First cards</p>
-              <ol className={s.cards}>{d.sample.map((c, i) => <li key={i}><strong>{c.question}</strong>{c.answer}</li>)}</ol>
-            </div>
+          {cards.length > 0 && (
+            <p style={{ margin: 0 }}><a href="#cards">Review all {cards.length} cards ↓</a> <span className="muted">({[`${custom} written by the submitter`, builtIn && `${builtIn} BoldFace built-in`, missing && `${missing} missing from the file`].filter(Boolean).join(", ")})</span></p>
           )}
           <p className="muted" style={{ margin: 0, fontSize: 14 }}>The submitter’s email address is in the review email (reply to it to reach them). It isn’t stored on the website.</p>
           <div className={s.actions}>
@@ -103,6 +110,73 @@ export default async function ReviewPage({ params, searchParams }: { params: Pro
           </div>
         </div>
       </div>
+      <section id="cards" className={s.cardSection}>
+        <h2 className={s.h}>All cards ({cards.length})</h2>
+        {cardsError && <p className="error">{cardsError}</p>}
+        <ol className={s.cardList}>
+          {cards.map((c, i) => (
+            <li key={c.id + i} className={`${s.card} ${c.missing ? s.cardMissing : ""}`}>
+              <div className={s.cardTop}>
+                <span className={s.cardNum}>{i + 1}</span>
+                {c.missing ? <span className={`${s.tag} ${s.tagWarn}`}>Missing from file</span>
+                  : c.builtIn ? <span className={s.tag}>BoldFace built-in</span>
+                  : <span className={`${s.tag} ${s.tagCustom}`}>Custom</span>}
+                {c.ratings.map((r) => <span key={r} className={`${s.tag} ${s.tagRating}`}>{r}</span>)}
+                {c.categories.filter((k) => k !== "User Made").map((k) => <span key={k} className={s.tag}>{k}</span>)}
+              </div>
+              {c.missing ? (
+                <p className="muted" style={{ margin: 0 }}>The deck lists card <code>{c.id}</code>, but it isn’t in the file or BoldFace’s built-in set.</p>
+              ) : (
+                <div className={s.qa}>
+                  <div>
+                    <p className={s.label}>Question</p>
+                    <p className={s.text}>{c.question || <em className="muted">(empty)</em>}</p>
+                    {c.questionImage && <a href={img(c.questionImage)} target="_blank" rel="noreferrer"><img className={s.photo} src={img(c.questionImage)} alt="Question photo" loading="lazy" /></a>}
+                  </div>
+                  <div>
+                    <p className={s.label}>Answer</p>
+                    <p className={s.text}>{c.answer || <em className="muted">(empty)</em>}</p>
+                    {c.answerImage && <a href={img(c.answerImage)} target="_blank" rel="noreferrer"><img className={s.photo} src={img(c.answerImage)} alt="Answer photo" loading="lazy" /></a>}
+                  </div>
+                </div>
+              )}
+              {c.ref && <p className={s.ref}>Reference: {c.ref}</p>}
+            </li>
+          ))}
+        </ol>
+        {cards.length > 3 && (
+          <div className={s.bottomActions}>
+          <div className={s.actions}>
+            {status === "pending" ? (
+              <>
+                <form action={reviewAction}>
+                  <input type="hidden" name="id" value={id} /><input type="hidden" name="t" value={t} /><input type="hidden" name="op" value="approve" />
+                  <button className="btn btn-accent btn-lg">Approve and publish</button>
+                </form>
+                <details className={s.reject}>
+                  <summary>Reject…</summary>
+                  <form action={reviewAction}>
+                    <input type="hidden" name="id" value={id} /><input type="hidden" name="t" value={t} /><input type="hidden" name="op" value="reject" />
+                    <button className={s.confirm}>Reject and delete the file</button>
+                  </form>
+                </details>
+              </>
+            ) : (
+              <>
+                <Link className="btn btn-ghost" href="/library">View the Deck Library</Link>
+                <details className={s.reject}>
+                  <summary>Remove from Library…</summary>
+                  <form action={reviewAction}>
+                    <input type="hidden" name="id" value={id} /><input type="hidden" name="t" value={t} /><input type="hidden" name="op" value="remove" />
+                    <button className={s.confirm}>Remove and delete the file</button>
+                  </form>
+                </details>
+              </>
+            )}
+          </div>
+          </div>
+        )}
+      </section>
       <p style={{ marginTop: 20 }}><Link href={adminList}>All submissions</Link></p>
     </div>
   );

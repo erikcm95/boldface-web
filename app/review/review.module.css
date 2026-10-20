@@ -27,3 +27,20 @@
 .list a:hover { background: rgba(255,255,255,0.04); }
 .meta { color: var(--text-muted); font-size: 14px; white-space: nowrap; }
 .h { margin: 0 0 12px; font-family: var(--font-display); font-weight: 800; font-size: 22px; }
+.cardSection { margin-top: 36px; scroll-margin-top: 90px; }
+.cardList { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
+.card { padding: 18px 20px; border-radius: 16px; background: var(--surface); border: 1px solid var(--line); display: flex; flex-direction: column; gap: 14px; }
+.cardMissing { border-color: #5a2a2a; }
+.cardTop { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.cardNum { font-family: var(--font-mono); font-size: 13px; color: var(--text-muted); margin-right: 6px; }
+.tag { font-size: 12px; padding: 2px 9px; border-radius: 999px; border: 1px solid var(--line-2); color: #c9cdd4; }
+.tagCustom { border-color: rgba(242,181,68,0.5); color: #f2c766; }
+.tagRating { background: rgba(242,181,68,0.14); border-color: transparent; color: #f2c766; font-weight: 600; }
+.tagWarn { border-color: #5a2a2a; color: #ffb3ab; }
+.qa { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+@media (max-width: 640px) { .qa { grid-template-columns: 1fr; } }
+.text { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.photo { display: block; margin-top: 10px; max-width: 100%; max-height: 320px; border-radius: 10px; border: 1px solid var(--line); }
+.ref { margin: 0; font-family: var(--font-mono); font-size: 13px; color: var(--text-muted); overflow-wrap: anywhere; }
+.bottomActions { margin-top: 18px; padding: 16px 20px; border-radius: 16px; background: var(--surface); border: 1px solid var(--line); }
+.bottomActions > div { border-top: 0; padding-top: 0; }
