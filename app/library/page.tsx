@@ -59,10 +59,10 @@ export default async function LibraryPage() {
             <ul className={s.grid}>
               {decks.map((d) => (
                 <li key={d.id} className={s.card}>
-                  <div className={s.cardTop} style={{ background: `linear-gradient(135deg, ${d.summary.gradientColors[0]}, ${d.summary.gradientColors[1]})` }}>
+                  <Link href={`/library/${d.id}`} className={s.cardTop} style={{ background: `linear-gradient(135deg, ${d.summary.gradientColors[0]}, ${d.summary.gradientColors[1]})` }}>
                     <span className={s.cardName}>{d.summary.name}</span>
-                    <span className={s.cardCount}>{d.summary.cardCount} {d.summary.cardCount === 1 ? "card" : "cards"}</span>
-                  </div>
+                    <span className={s.cardCount}>{d.summary.cardCount} {d.summary.cardCount === 1 ? "card" : "cards"} · View cards ›</span>
+                  </Link>
                   <div className={s.cardBody}>
                     {d.summary.description && <p className={s.cardDesc}>{d.summary.description}</p>}
                     {(d.summary.ratings.length > 0 || d.summary.categories.length > 0) && (
@@ -75,7 +75,7 @@ export default async function LibraryPage() {
                       <p className={s.sample}><span>Sample</span> {d.summary.sample[0].question}</p>
                     )}
                     <div className={s.cardFoot}>
-                      <span className={s.by}>{d.author ? `By ${d.author}` : "Shared by the community"}</span>
+                      <span className={s.by}>{d.author ? `By ${d.author}` : "Shared by the community"}<br /><Link href={`/library/${d.id}`} className={s.viewLink}>See all cards</Link></span>
                       <a className="btn btn-accent" href={d.file.downloadUrl} download={d.fileName}>
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 4v12M7 11l5 5 5-5M5 20h14" /></svg>
                         Download

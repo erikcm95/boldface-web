@@ -1,0 +1,6 @@
+.wrap { display: flex; flex-direction: column; gap: 10px; }
+.row { display: flex; flex-wrap: wrap; gap: 10px; }
+.row :global(.btn) { gap: 8px; flex: 1 1 0; min-width: 0; white-space: nowrap; }
+@media (min-width: 640px) { .row :global(.btn) { flex: 0 0 auto; } }
+.open:disabled { background: #2a2d33; color: #7d838d; cursor: not-allowed; }
+.hint { margin: 0; font-size: 14px; color: var(--text-muted); }

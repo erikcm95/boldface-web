@@ -33,3 +33,6 @@
 .cardFoot :global(.btn) { gap: 8px; }
 .by { font-size: 14px; color: var(--text-muted); min-width: 0; overflow-wrap: anywhere; }
 .howto { margin: 22px 0 0; font-size: 14px; color: #c9cdd4; }
+a.cardTop { text-decoration: none; transition: filter 0.15s; }
+a.cardTop:hover { filter: brightness(1.08); color: #fff; }
+.viewLink { font-size: 14px; font-weight: 600; }

@@ -5,6 +5,7 @@ import { readDeckCards, type ReviewCard } from "@/lib/server/deckPackage";
 import { builtInCards, deckBytes } from "@/lib/server/reviewDeck";
 import { reviewAction } from "../actions";
 import s from "../review.module.css";
+import DeckCards from "@/components/DeckCards";
 
 export const metadata: Metadata = { title: "Review deck", robots: { index: false, follow: false } };
 export const dynamic = "force-dynamic";
@@ -113,37 +114,7 @@ export default async function ReviewPage({ params, searchParams }: { params: Pro
       <section id="cards" className={s.cardSection}>
         <h2 className={s.h}>All cards ({cards.length})</h2>
         {cardsError && <p className="error">{cardsError}</p>}
-        <ol className={s.cardList}>
-          {cards.map((c, i) => (
-            <li key={c.id + i} className={`${s.card} ${c.missing ? s.cardMissing : ""}`}>
-              <div className={s.cardTop}>
-                <span className={s.cardNum}>{i + 1}</span>
-                {c.missing ? <span className={`${s.tag} ${s.tagWarn}`}>Missing from file</span>
-                  : c.builtIn ? <span className={s.tag}>BoldFace built-in</span>
-                  : <span className={`${s.tag} ${s.tagCustom}`}>Custom</span>}
-                {c.ratings.map((r) => <span key={r} className={`${s.tag} ${s.tagRating}`}>{r}</span>)}
-                {c.categories.filter((k) => k !== "User Made").map((k) => <span key={k} className={s.tag}>{k}</span>)}
-              </div>
-              {c.missing ? (
-                <p className="muted" style={{ margin: 0 }}>The deck lists card <code>{c.id}</code>, but it isn’t in the file or BoldFace’s built-in set.</p>
-              ) : (
-                <div className={s.qa}>
-                  <div>
-                    <p className={s.label}>Question</p>
-                    <p className={s.text}>{c.question || <em className="muted">(empty)</em>}</p>
-                    {c.questionImage && <a href={img(c.questionImage)} target="_blank" rel="noreferrer"><img className={s.photo} src={img(c.questionImage)} alt="Question photo" loading="lazy" /></a>}
-                  </div>
-                  <div>
-                    <p className={s.label}>Answer</p>
-                    <p className={s.text}>{c.answer || <em className="muted">(empty)</em>}</p>
-                    {c.answerImage && <a href={img(c.answerImage)} target="_blank" rel="noreferrer"><img className={s.photo} src={img(c.answerImage)} alt="Answer photo" loading="lazy" /></a>}
-                  </div>
-                </div>
-              )}
-              {c.ref && <p className={s.ref}>Reference: {c.ref}</p>}
-            </li>
-          ))}
-        </ol>
+        <DeckCards cards={cards} imageUrl={img} />
         {cards.length > 3 && (
           <div className={s.bottomActions}>
           <div className={s.actions}>
